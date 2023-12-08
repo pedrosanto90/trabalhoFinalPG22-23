@@ -45,35 +45,48 @@ void criarManutencao() {
         exit(1);
     }
     // inserir data da manutencao
+    // limpa o buufer
     setbuf(stdin, NULL);
     printf("Data da Manutencao: ");
+    // le os dados inseridos pelo utilizador e insere a partir do stdin na struct manutencao.dataManutencao
     fgets(manutencao->dataManutencao, 10, stdin);
-    printf("%s\n", manutencao->dataManutencao);
+    // printf("%s\n", manutencao->dataManutencao);
+
+    
 
     // inserir tipo de manutencao
      setbuf(stdin, NULL);
     printf("Tipo de Manutencao: ");
     fgets(manutencao->tipoManutencao, 15, stdin);
-    printf("%s\n", manutencao->tipoManutencao);
+    // printf("%s\n", manutencao->tipoManutencao);
 
     // inserir hora de inicio
      setbuf(stdin, NULL);
     printf("Hora de Inicio da Manutencao: ");
     fgets(manutencao->horaInicio, 6, stdin);
-    printf("%s\n", manutencao->horaInicio);
+    // printf("%s\n", manutencao->horaInicio);
 
     // inserir hora de fim
     setbuf(stdin, NULL);
     printf("Hora de Fim da Manutencao: ");
     fgets(manutencao->horaFim, 6, stdin);
-    printf("%s\n", manutencao->horaFim);
+    // printf("%s\n", manutencao->horaFim);
 
     // inserir descricao da manutencao
 
     setbuf(stdin, NULL);
     printf("Descricao da Manutencao: ");
     fgets(manutencao->descricao, 100, stdin);
-    printf("%s\n", manutencao->descricao);
+    // printf("%s\n", manutencao->descricao);
+
+    // Escreve os dados da struct no respetivo ficheiro
+    // codigo manutencao
+    fprintf(file, "Data: %s", manutencao->dataManutencao);
+    fprintf(file, "Tipo: %s", manutencao->tipoManutencao);
+    fprintf(file, "Hora de Inicio: %s", manutencao->horaInicio);
+    fprintf(file, "Data de fim: %s", manutencao->horaFim);
+    // duracao da manutencao
+    fprintf(file, "Descricao: %s", manutencao->descricao);
 
     // falta criar funcao para calcular duracao da manutencao e criacao do codigo de manutencao
 
