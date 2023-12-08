@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <stdlib.h>
 
 struct manutencao {
     int codManutencao; // gerado automaticamente tendo em conta o registo anterior
@@ -57,6 +58,27 @@ void menu() {
     // consulta por cliente
     // consulta manutencao
     // alterar manutencao
+    int opcao;
+    printf("1 - Criar Manutencao;\n2 - Consultar Manutencao por Cliente;\n3 - Consultar Todas as Manutencoes;\n4 - Alterar Manutencao;\n 0 - Sair;\n");
+    scanf("%d", &opcao);
+
+    switch(opcao) {
+        case 1:
+            criarManutencao();
+            break;
+        case 2:
+            consultaManCliente();
+            break;
+        case 3:
+            consultarManutencao();
+            break;
+        case 4:
+            alterarManutencao();
+        case 0:
+            printf("Terminar Programa\n");
+            exit(0);
+
+        }
 }
 
 char createFileName(int clientNumber, const char *diretorio, const char file_name) {
