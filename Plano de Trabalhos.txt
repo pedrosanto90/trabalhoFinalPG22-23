@@ -1,0 +1,18 @@
+Grupo 3
+
+Tarefas
+
+criar menus - Rodrigo Lucindo
+
+gerar nome de ficheiros - Pedro Santo
+    -para criacao de novos ficheiros
+    -para consulta/alterarcao
+Criar Manutencao - Rodrigo Lucindo
+
+Manutencao por Cliente - Joao Bagueixo Ferreira
+
+Consultar Manutencoes - Joao Pinheiro Ferreira
+
+Alterar Manutencoes - Pedro Espirito Santo
+
+
