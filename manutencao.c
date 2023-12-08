@@ -75,9 +75,12 @@ void criarManutencao() {
     fgets(manutencao->descricao, 100, stdin);
     printf("%s\n", manutencao->descricao);
 
+    // falta criar funcao para calcular duracao da manutencao e criacao do codigo de manutencao
+
     fclose(file);
 
     free(manutencao);
+    menu();
 }
 
 int consultaManCliente() {
