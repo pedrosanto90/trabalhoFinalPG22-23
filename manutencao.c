@@ -38,7 +38,7 @@ void criarManutencao() {
     struct manutencoes *manutencao =  ( struct manutencoes*) malloc(sizeof(struct manutencoes));
 
     FILE *file;
-    file = fopen("novo.txt", "w");
+    file = fopen("/home/pedro/Documents/ipt/programacao-e-algoritmia/trabalhoFinal/manutencoes/novo.txt", "w");
 
     if(file == NULL) {
         printf("erro\n");
@@ -98,7 +98,7 @@ int consultaManCliente() {
     char ignore_char = '_';
 
     // Abre o diretório atual
-    DIR *dir = opendir(".");
+    DIR *dir = opendir("./manutencoes");
 
     // Verifica se o diretório foi aberto com sucesso
     if (dir != NULL) {
