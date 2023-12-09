@@ -177,9 +177,10 @@ int consultaManCliente() {
         }
     consultaFicheiroManutencao();
         
+    
 
-        // Fecha o diretório
-        closedir(dir);
+
+        
     } else {
         char opcao;
         // Se não foi possível abrir o diretório, imprime uma mensagem de erro
@@ -202,6 +203,25 @@ int consultaManCliente() {
 }
 
 void consultarManutencao() {
+
+    DIR *dir;
+    struct dirent *entrada;
+
+    dir = opendir(".");
+
+    if (dir == NULL) {
+        perror("Erro ao abrir o diretório");
+        return;
+    }
+
+    while ((entrada = readdir(dir)) != NULL) {
+        // Verifica se o arquivo tem a extensão .txt
+        if (strstr(entrada->d_name, ".txt") != NULL) {
+            printf("%s\n", entrada->d_name);
+        }
+    }
+
+    closedir(dir);
     // pesquisar manutencoes num intervalo de tempo
     // mostrar manutencoes da mais recente para a mais antiga
     // mostrar manutencoes de acordo com a duracao
