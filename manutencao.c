@@ -5,8 +5,8 @@
 
 struct manutencoes {
     int codManutencao; // gerado automaticamente tendo em conta o registo anterior
-    char dataManutencao[10]; //YYYY-MM-DD
-    char tipoManutencao[15]; // Correctiva/Preventiva
+    char dataManutencao[11]; //YYYY-MM-DD
+    char tipoManutencao[16]; // Correctiva/Preventiva
     char horaInicio[6]; //HH:MM
     char horaFim[6]; // HH:MM
     int duracao[6]; // HH:MM
@@ -21,6 +21,8 @@ void alterarManutencao();
 char criarCodigoManutencao(int numCliente, const char file_name);
 char procurarFicheiro(int numCliente);
 void menu();
+void consultaFicheiroManutencao();
+
 int main() {
     printf("Trabalho Final\nGestao de Manutencoes\n");
     menu();
@@ -41,31 +43,31 @@ void criarManutencao() {
     file = fopen("novo.txt", "w");
 
     if(file == NULL) {
-        printf("erro\n");
-        exit(1);
+        printf("Erro ao abrir ficheiro\n");
+        menu();
     }
     // inserir data da manutencao
     // limpa o buufer
     setbuf(stdin, NULL);
-    printf("Data da Manutencao: ");
+    printf("Data da Manutencao(AAAA-MM-DD): ");
     // le os dados inseridos pelo utilizador e insere a partir do stdin 
-    fgets(manutencao->dataManutencao, 10, stdin);
+    fgets(manutencao->dataManutencao, 11, stdin);
 
     // inserir tipo de manutencao
-     setbuf(stdin, NULL);
+    setbuf(stdin, NULL);
     printf("Tipo de Manutencao: ");
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->tipoManutencao, 15, stdin);
 
     // inserir hora de inicio
-     setbuf(stdin, NULL);
-    printf("Hora de Inicio da Manutencao: ");
+    setbuf(stdin, NULL);
+    printf("Hora de Inicio da Manutencao(HH:MM): ");
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->horaInicio, 6, stdin);
 
     // inserir hora de fim
     setbuf(stdin, NULL);
-    printf("Hora de Fim da Manutencao: ");
+    printf("Hora de Fim da Manutencao(HH:MM): ");
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->horaFim, 6, stdin);
     
@@ -78,7 +80,7 @@ void criarManutencao() {
 
     // Escreve os dados da struct no respetivo ficheiro
     // codigo manutencao
-    criarCodigoManutencao(int numCliente, const char file_name);
+    // criarCodigoManutencao(int numCliente, char file_name);
 
     fprintf(file, "Data: %s", manutencao->dataManutencao);
     fprintf(file, "Tipo: %s", manutencao->tipoManutencao);
@@ -128,6 +130,8 @@ int consultaManCliente() {
                 }
             }
         }
+        consultaFicheiroManutencao();
+        
 
         // Fecha o diretório
         closedir(dir);
@@ -171,7 +175,7 @@ void menu() {
     // consulta manutencao
     // alterar manutencao
     int opcao;
-    printf("1 - Criar Manutencao;\n2 - Consultar Manutencao por Cliente;\n3 - Consultar Todas as Manutencoes;\n4 - Alterar Manutencao;\n 0 - Sair;\n");
+    printf("1 - Criar Manutencao;\n2 - Consultar Manutencao por Cliente;\n3 - Consultar Todas as Manutencoes;\n4 - Alterar Manutencao;\n0 - Sair;\n");
     scanf("%d", &opcao);
 
     switch(opcao) {
@@ -193,7 +197,7 @@ void menu() {
         }
 }
 
-char criarCodigoManutencao(int clientNumber, const char file_name) {
+char criarCodigoManutencao(int numCliente, const char file_name) {
     char fileName;
     
     return fileName;
@@ -208,4 +212,35 @@ char procurarFicheiro(int numCliente) {
     DIR *dir;
     //dir = opendir(diretorio);
     return nomeFicheiro;
+}
+
+void consultaFicheiroManutencao() {
+    char codManutencao[15];
+    char linha[150];
+
+    // limpa o buffer
+    setbuf(stdin, NULL);
+    printf("Indique qual a manutencao que deseja ver: ");
+    scanf("%s", codManutencao);
+    
+    // faz a concatenacao do codigo de manutencao com .txt para gerar um nome de arquivo valido para abrir
+    strcat(codManutencao, ".txt");
+
+    FILE *file;
+    // abre o  ficheiro
+    file = fopen(codManutencao, "r");
+
+    // verifica se consegue abrir o ficheiro
+    if (file == NULL) {
+        printf("Erro ao abrir ficheiro.");
+        // se nao conseguir chama novamente a funcao consultaManClinete
+        consultaManCliente();
+    }
+
+    // percorre cada linha do ficheiro e imprime para o utilizador ver
+    while (fgets(linha, sizeof(linha), file) != NULL) {
+        printf("%s", linha);
+    }
+    // fecha o ficheiro
+    fclose(file);
 }
