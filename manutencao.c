@@ -18,7 +18,7 @@ void criarManutencao();
 int consultaManCliente();
 void consultarManutencao();
 void alterarManutencao();
-char createFileName(int numCliente, const char *diretorio, const char file_name);
+char criarCodigoManutencao(int numCliente, const char file_name);
 char procurarFicheiro(int numCliente);
 void menu();
 int main() {
@@ -38,7 +38,7 @@ void criarManutencao() {
     struct manutencoes *manutencao =  ( struct manutencoes*) malloc(sizeof(struct manutencoes));
 
     FILE *file;
-    file = fopen("/home/pedro/Documents/ipt/programacao-e-algoritmia/trabalhoFinal/manutencoes/novo.txt", "w");
+    file = fopen("novo.txt", "w");
 
     if(file == NULL) {
         printf("erro\n");
@@ -48,39 +48,38 @@ void criarManutencao() {
     // limpa o buufer
     setbuf(stdin, NULL);
     printf("Data da Manutencao: ");
-    // le os dados inseridos pelo utilizador e insere a partir do stdin na struct manutencao.dataManutencao
+    // le os dados inseridos pelo utilizador e insere a partir do stdin 
     fgets(manutencao->dataManutencao, 10, stdin);
-    // printf("%s\n", manutencao->dataManutencao);
-
-    
 
     // inserir tipo de manutencao
      setbuf(stdin, NULL);
     printf("Tipo de Manutencao: ");
+    // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->tipoManutencao, 15, stdin);
-    // printf("%s\n", manutencao->tipoManutencao);
 
     // inserir hora de inicio
      setbuf(stdin, NULL);
     printf("Hora de Inicio da Manutencao: ");
+    // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->horaInicio, 6, stdin);
-    // printf("%s\n", manutencao->horaInicio);
 
     // inserir hora de fim
     setbuf(stdin, NULL);
     printf("Hora de Fim da Manutencao: ");
+    // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->horaFim, 6, stdin);
-    // printf("%s\n", manutencao->horaFim);
-
+    
     // inserir descricao da manutencao
 
     setbuf(stdin, NULL);
     printf("Descricao da Manutencao: ");
+    // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->descricao, 100, stdin);
-    // printf("%s\n", manutencao->descricao);
 
     // Escreve os dados da struct no respetivo ficheiro
     // codigo manutencao
+    criarCodigoManutencao(int numCliente, const char file_name);
+
     fprintf(file, "Data: %s", manutencao->dataManutencao);
     fprintf(file, "Tipo: %s", manutencao->tipoManutencao);
     fprintf(file, "Hora de Inicio: %s", manutencao->horaInicio);
@@ -102,7 +101,7 @@ int consultaManCliente() {
     // escolher uma das manutencoes e ver os detalhes dessa manutencao
     // Solicita ao usuário inserir a string de pesquisa
     char search_string[256];
-    printf("Digite a string de pesquisa: ");
+    printf("Numero de Cliente: ");
     fgets(search_string, sizeof(search_string), stdin);
     // Remove a quebra de linha do final da string
     search_string[strcspn(search_string, "\n")] = '\0';
@@ -111,7 +110,7 @@ int consultaManCliente() {
     char ignore_char = '_';
 
     // Abre o diretório atual
-    DIR *dir = opendir("./manutencoes");
+    DIR *dir = opendir(".");
 
     // Verifica se o diretório foi aberto com sucesso
     if (dir != NULL) {
@@ -133,9 +132,21 @@ int consultaManCliente() {
         // Fecha o diretório
         closedir(dir);
     } else {
+        char opcao;
         // Se não foi possível abrir o diretório, imprime uma mensagem de erro
-        perror("Erro ao abrir o diretório");
-        return 1;
+        printf("O cliente que prentende consultar nao tem nenhuma manutencao registada.\n");
+        printf("Deseja criar um registo para este cliente?[S]im [N]ao\n");
+        scanf("%c", &opcao);
+
+        if(opcao == 'S') {
+            criarManutencao();
+        } else if (opcao == 'N') {
+            menu();
+        } else {
+            printf("Leitura nao efetuada");
+            menu();
+        }
+
     }
 
     return 0;
@@ -182,7 +193,7 @@ void menu() {
         }
 }
 
-char createFileName(int clientNumber, const char *diretorio, const char file_name) {
+char criarCodigoManutencao(int clientNumber, const char file_name) {
     char fileName;
     
     return fileName;
