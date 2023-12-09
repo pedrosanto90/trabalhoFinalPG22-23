@@ -22,6 +22,17 @@ char criarCodigoManutencao(int numCliente, const char file_name);
 char procurarFicheiro(int numCliente);
 void menu();
 void consultaFicheiroManutencao();
+void removerNovaLinha(char *str);
+
+// Funcao para limpar o terminal
+// Funciona em ambientes windows e ambientes Unix/Linux
+void limparTerminal() {
+    #ifdef _WIN32
+        system("cls"); // Para Windows
+    #else
+        system("clear"); // Para sistemas Unix/Linux
+    #endif
+}
 
 int main() {
     printf("Trabalho Final\nGestao de Manutencoes\n");
@@ -29,8 +40,16 @@ int main() {
     return 0;
 }
 
-void criarManutencao() {
+void removerNovaLinha(char *str) {
+    int pos = strcspn(str, "\n");
+    if (str[pos] == '\n') {
+        str[pos] = '\0';
+    }
+}
 
+void criarManutencao() {
+    // Limpa o terminal
+    limparTerminal();
     // codigo de manutencao criado automaticamente de acordo com o ultimo registo (numero de manutencao conjugado com numero de cliente)
     // inserir data, hara de inicio e de fim de manutencao, duracao calculada automaticamente 
     // indicar o cliente ao qual foi feita a manutencao
@@ -50,26 +69,34 @@ void criarManutencao() {
     // limpa o buufer
     setbuf(stdin, NULL);
     printf("Data da Manutencao(AAAA-MM-DD): ");
+    
     // le os dados inseridos pelo utilizador e insere a partir do stdin 
     fgets(manutencao->dataManutencao, 11, stdin);
+    //removerNovaLinha(manutencao->dataManutencao);
 
     // inserir tipo de manutencao
     setbuf(stdin, NULL);
     printf("Tipo de Manutencao: ");
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->tipoManutencao, 15, stdin);
+    //removerNovaLinha(manutencao->tipoManutencao);while ((getchar()) != '\n');
+    while ((getchar()) != '\n');
 
     // inserir hora de inicio
     setbuf(stdin, NULL);
     printf("Hora de Inicio da Manutencao(HH:MM): ");
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->horaInicio, 6, stdin);
+    //removerNovaLinha(manutencao->horaInicio);
+    while ((getchar()) != '\n');
 
     // inserir hora de fim
     setbuf(stdin, NULL);
     printf("Hora de Fim da Manutencao(HH:MM): ");
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->horaFim, 6, stdin);
+    //removerNovaLinha(manutencao->horaFim);
+    while ((getchar()) != '\n');
     
     // inserir descricao da manutencao
 
@@ -77,17 +104,19 @@ void criarManutencao() {
     printf("Descricao da Manutencao: ");
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->descricao, 100, stdin);
+    //removerNovaLinha(manutencao->descricao);
+    while ((getchar()) != '\n');
 
     // Escreve os dados da struct no respetivo ficheiro
     // codigo manutencao
     // criarCodigoManutencao(int numCliente, char file_name);
 
-    fprintf(file, "Data: %s", manutencao->dataManutencao);
-    fprintf(file, "Tipo: %s", manutencao->tipoManutencao);
-    fprintf(file, "Hora de Inicio: %s", manutencao->horaInicio);
-    fprintf(file, "Data de fim: %s", manutencao->horaFim);
+    fprintf(file, "Data: %s\n", manutencao->dataManutencao);
+    fprintf(file, "Tipo: %s\n", manutencao->tipoManutencao);
+    fprintf(file, "Hora de Inicio: %s\n", manutencao->horaInicio);
+    fprintf(file, "Data de fim: %s\n", manutencao->horaFim);
     // duracao da manutencao
-    fprintf(file, "Descricao: %s", manutencao->descricao);
+    fprintf(file, "Descricao: %s\n", manutencao->descricao);
 
     // falta criar funcao para calcular duracao da manutencao e criacao do codigo de manutencao
 
