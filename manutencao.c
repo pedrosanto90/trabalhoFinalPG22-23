@@ -110,7 +110,7 @@ void criarManutencao() {
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->descricao, 100, stdin);
     setbuf(stdin, NULL);
-    while ((getchar()) != '\n');
+    // while ((getchar()) != '\n');
 
     
     // codigo manutencao
@@ -228,6 +228,26 @@ void consultarManutencao() {
 }
 
 void alterarManutencao() {
+    setbuf(stdin, NULL);
+    FILE *file; 
+    char ficheiro[256];
+    char linha[150];
+    printf("Indique o ficheiro que quer alterar: ");
+    scanf("%s", &ficheiro);
+    // fgets(ficheiro, sizeof(ficheiro), stdin);
+    setbuf(stdin, NULL);
+    strcat(ficheiro, ".txt");
+    file = fopen(ficheiro, "r+");
+
+    if(file == NULL){
+        printf("Erro ao abrir ficheiro\n");
+        alterarManutencao();
+    }
+    while (fgets(linha, sizeof(linha), file) != NULL) {
+        printf("%s", linha);
+    }
+
+    fclose(file);
     // retornar os dados do cliente conforme estrutura do grupo 2
     // mostrar manutencoes feitas nesse cliente e uma breve descricao da mesma 
     // alterar manutencao
