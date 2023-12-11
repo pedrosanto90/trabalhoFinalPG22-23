@@ -5,7 +5,6 @@ FEITO
 FALTA FAZER
 
     -criar manutencao    
-        -resolver bug relacionado com os dois enters
         -criacao de codigo de manutencao
     -consulta de todas as manutencoes
     -alterar manutencao
