@@ -14,11 +14,19 @@ struct manutencoes {
  // char equipamento[50];
 };
 
+struct clientes {
+    int idCliente[10];
+    char nomeCliente[50];
+    char morada[50];
+    int nif[9];
+    int contato[12];
+};
+
 void criarManutencao();
 int consultaManCliente();
 void consultarManutencao();
 void alterarManutencao();
-char criarCodigoManutencao(int numCliente, const char file_name);
+void criarCodigoManutencao(int *numCliente);
 char procurarFicheiro(int numCliente);
 void menu();
 void consultaFicheiroManutencao();
@@ -40,13 +48,6 @@ int main() {
     return 0;
 }
 
-void removerNovaLinha(char *str) {
-    int pos = strcspn(str, "\n");
-    if (str[pos] == '\n') {
-        str[pos] = '\0';
-    }
-}
-
 void criarManutencao() {
     // Limpa o terminal
     limparTerminal();
@@ -57,6 +58,7 @@ void criarManutencao() {
     // inserir dados num documento .txt (cliente?) todas as manutencoes de um cliente num mesmo documento ou agrupado em pastas de cliente?
         // nome do ficheiro sera dado consoante o decidido no ponto anterior 
     struct manutencoes *manutencao =  ( struct manutencoes*) malloc(sizeof(struct manutencoes));
+    struct clientes *cliente = (struct clientes*) malloc(sizeof(struct clientes));
 
     FILE *file;
     file = fopen("novo.txt", "w");
@@ -65,9 +67,12 @@ void criarManutencao() {
         printf("Erro ao abrir ficheiro\n");
         menu();
     }
-    // inserir data da manutencao
-   
+    // Inserir numero de cliente
+    printf("Indique o numero de cliente: ");
+    scanf("%d", cliente->idCliente);
+    setbuf(stdin, NULL);
     
+    // inserir data da manutencao
     printf("Data da Manutencao(AAAA-MM-DD): ");
     
     // le os dados inseridos pelo utilizador e insere a partir do stdin 
@@ -114,9 +119,10 @@ void criarManutencao() {
 
     
     // codigo manutencao
-    // criarCodigoManutencao(int numCliente, char file_name);
+    criarCodigoManutencao(cliente->idCliente);
     
     // Escreve os dados da struct no respetivo ficheiro
+    fprintf(file, "Numero de Cliente: %i\n", *cliente->idCliente);
     fprintf(file, "Data: %s\n", manutencao->dataManutencao);
     fprintf(file, "Tipo: %s\n", manutencao->tipoManutencao);
     fprintf(file, "Hora de Inicio: %s\n", manutencao->horaInicio);
@@ -137,6 +143,7 @@ void criarManutencao() {
     fclose(file);
 
     free(manutencao);
+    free(cliente);
     menu();
 }
 
@@ -233,7 +240,7 @@ void alterarManutencao() {
     char ficheiro[256];
     char linha[150];
     printf("Indique o ficheiro que quer alterar: ");
-    scanf("%s", &ficheiro);
+    scanf("%s", ficheiro);
     // fgets(ficheiro, sizeof(ficheiro), stdin);
     setbuf(stdin, NULL);
     strcat(ficheiro, ".txt");
@@ -284,11 +291,25 @@ void menu() {
         }
 }
 
-char criarCodigoManutencao(int numCliente, const char file_name) {
-    char fileName;
-    
-    return fileName;
+void criarCodigoManutencao(int *numCliente) {
+    // recebe numero de cliente
+    // strcat com _numero da manutencao + .txt
+    char num[15];
+    char numFinal;
+    // fazer funcao para correr os ficheiros do cliente
+    // guardar os numeros depois do _ num array
+    // fazer um bubble sort para ordenar o array de forma decrescente
+    // pegar no primeiro elemento do array, somar 1 e guardar numa variavel
+    // converter essa variavel para char 
+    // strcat com o _
+    // strcat com o numero de cliente
+    char codManutencao[30];
+    sprintf(num, "%d", *numCliente); 
+    strcpy(codManutencao, num);
+    strcat(codManutencao, "_");
+      
 }
+
 char procurarFicheiro(int numCliente) {
     char codigo[10];
     char nomeFicheiro;
