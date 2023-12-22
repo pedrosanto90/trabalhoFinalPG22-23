@@ -237,28 +237,52 @@ void consultarManutencao() {
 
 void alterarManutencao() {
     setbuf(stdin, NULL);
-    FILE *file; 
+    FILE *file;
     char ficheiro[256];
     char linha[150];
     printf("Indique o ficheiro que quer alterar: ");
     scanf("%s", ficheiro);
-    // fgets(ficheiro, sizeof(ficheiro), stdin);
     setbuf(stdin, NULL);
     strcat(ficheiro, ".txt");
     file = fopen(ficheiro, "r+");
 
-    if(file == NULL){
+    if (file == NULL) {
         printf("Erro ao abrir ficheiro\n");
         alterarManutencao();
     }
+
+
+    // Pedir ao usuário para indicar qual linha deseja alterar
+    int numeroLinha = 6;
+
+    // Mover o ponteiro para o início do arquivo
+    fseek(file, 0, SEEK_SET);
+
+    // Variável para contar as linhas
+    int contadorLinhas = 0;
+    char novaDescricao[100];
+    printf("Descricao: ");
+    fgets(novaDescricao, sizeof(novaDescricao), stdin);
+    novaDescricao[strcspn(novaDescricao, "\n")] = '\0'; 
+    // Percorrer o arquivo novamente
     while (fgets(linha, sizeof(linha), file) != NULL) {
-        printf("%s", linha);
+        contadorLinhas++;
+
+        // Se a linha atual é a linha desejada, realizar a alteração
+        if (contadorLinhas == numeroLinha) {
+            // Aqui você pode pedir ao usuário para inserir a nova informação
+            // e substituir a linha atual com a nova informação usando fprintf
+            // Exemplo: fprintf(file, "Nova informacao\n");
+
+            // Exemplo: substituir a linha por "Nova informacao"
+            fprintf(file, "Descricao: %s\n", novaDescricao);
+
+            printf("Linha alterada com sucesso!\n");
+            break; // Parar a busca, pois a linha já foi alterada
+        }
     }
 
     fclose(file);
-    // retornar os dados do cliente conforme estrutura do grupo 2
-    // mostrar manutencoes feitas nesse cliente e uma breve descricao da mesma 
-    // alterar manutencao
 }
 
 void menu() {
