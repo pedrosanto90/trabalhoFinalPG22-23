@@ -4,22 +4,21 @@
 #include <stdlib.h>
 
 struct manutencoes {
-    int codManutencao; // gerado automaticamente tendo em conta o registo anterior
+    int codManutencao; // gerado automaticamente
     char dataManutencao[11]; //YYYY-MM-DD
     char tipoManutencao[11]; // Correctiva/Preventiva
     char horaInicio[6]; //HH:MM
     char horaFim[6]; // HH:MM
     int duracao[6]; // HH:MM
-    char descricao[100]; // descricao do que foi efetuado, material utilizado (consoante informacao do grupo 1-fornecedores)
-                         // char equipamento[50];
+    char descricao[100]; // descricao do que foi efetuado
 };
 
 struct clientes {
-    int idCliente[10];
+    int idCliente;
     char nomeCliente[50];
     char morada[50];
-    int nif[9];
-    int contato[12];
+    int nif;
+    int contato;
 };
 
 void criarManutencao();
@@ -27,14 +26,16 @@ int consultaManCliente();
 void consultarManutencao();
 void alterarManutencao();
 char criarCodigoManutencao(int *numCliente, char *codManutencao);
-char procurarFicheiro(int numCliente);
 void menu();
 void consultaFicheiroManutencao();
 char criarNomeFicheiro(char *codManutencao, char *fileName);
 
+void listarFicheiros();
 
-// Funcao para limpar o terminal
-// Funciona em ambientes windows e ambientes Unix/Linux
+
+/* Funcao para limpar o terminal
+ Funciona em ambientes windows e ambientes Unix/Linux */
+
 void limparTerminal() {
 #ifdef _WIN32
     system("cls"); // Para Windows
@@ -44,7 +45,6 @@ void limparTerminal() {
 }
 
 int main() {
-    printf("Trabalho Final\nGestao de Manutencoes\n");
     menu();
     return 0;
 }
@@ -62,13 +62,13 @@ void criarManutencao() {
     struct clientes *cliente = (struct clientes*) malloc(sizeof(struct clientes));
     char codigoManutencao;
     printf("Indique o numero de cliente: ");
-    scanf("%d", cliente->idCliente);
+    scanf("%i", &cliente->idCliente);
     setbuf(stdin, NULL);
 
 
     char *codManutencao;
     codManutencao = &codigoManutencao;
-    criarCodigoManutencao(cliente->idCliente, codManutencao); 
+    criarCodigoManutencao(&cliente->idCliente, codManutencao); 
     char nomeFicheiro;
     char *fileName = &nomeFicheiro;
     criarNomeFicheiro(codManutencao, fileName);
@@ -124,9 +124,9 @@ void criarManutencao() {
     fgets(manutencao->descricao, 100, stdin);
     setbuf(stdin, NULL);
     // while ((getchar()) != '\n');
+    
     // Escreve os dados da struct no respetivo ficheiro
-    fprintf(file, "Numero de Cliente: %i\n", *cliente->idCliente);
-    fprintf(file, "Codigo de Manutencao: %s\n", codManutencao); 
+    fprintf(file, "Numero de Cliente: %i\n", cliente->idCliente);
     fprintf(file, "Data: %s\n", manutencao->dataManutencao);
     fprintf(file, "Tipo: %s\n", manutencao->tipoManutencao);
     fprintf(file, "Hora de Inicio: %s\n", manutencao->horaInicio);
@@ -227,6 +227,7 @@ void consultarManutencao() {
             printf("%s\n", entrada->d_name);
         }
     }
+    consultaFicheiroManutencao();
 
     closedir(dir);
     // pesquisar manutencoes num intervalo de tempo
@@ -262,12 +263,16 @@ void alterarManutencao() {
 
 void menu() {
     limparTerminal();
+    setbuf(stdin, NULL);
     // Criar menu para escolher o que fazer
     // inserir
     // consulta por cliente
     // consulta manutencao
     // alterar manutencao
     int opcao;
+
+    printf("Trabalho Final\nGestao de Manutencoes\n");
+
     printf("1 - Criar Manutencao;\n2 - Consultar Manutencao por Cliente;\n3 - Consultar Todas as Manutencoes;\n4 - Alterar Manutencao;\n0 - Sair;\n");
     scanf("%d", &opcao);
     setbuf(stdin, NULL);
@@ -283,6 +288,7 @@ void menu() {
             consultarManutencao();
             break;
         case 4:
+            listarFicheiros();
             alterarManutencao();
             break;
         case 0:
@@ -295,16 +301,37 @@ void menu() {
             
 
     }
+    setbuf(stdin, NULL);
+}
+void listarFicheiros() {
+
+    DIR *dir;
+    struct dirent *entrada;
+
+    dir = opendir(".");
+
+    if (dir == NULL) {
+        perror("Erro ao abrir o diretório");
+        return;
+    }
+
+    while ((entrada = readdir(dir)) != NULL) {
+        // Verifica se o arquivo tem a extensão .txt
+        if (strstr(entrada->d_name, ".txt") != NULL) {
+            printf("%s\n", entrada->d_name);
+        }
+    }
+
+    closedir(dir);
 }
 
 char criarCodigoManutencao(int *numCliente, char *codManutencao) {
-    // recebe numero de cliente
-    // strcat com _numero da manutencao + .txt
+    int numero = 0;  // Inicialize a variável numero
     int temp;
-    int numero;
     char charTemp[4];
     char nomeFicheiro[15];
     DIR *dir;
+    int contador = 0;
     struct dirent *entrada;
 
     dir = opendir(".");
@@ -315,60 +342,44 @@ char criarCodigoManutencao(int *numCliente, char *codManutencao) {
     }
 
     while ((entrada = readdir(dir)) != NULL) {
-        // Verifica se o arquivo tem a extensão .txt
         if (strstr(entrada->d_name, ".txt") != NULL) {
             strcpy(nomeFicheiro, entrada->d_name);
-        }
 
+            char *token = strtok(nomeFicheiro, "_");
+            token = strtok(NULL, "_");
 
-        char *token = strtok(nomeFicheiro, "_"); // Ignora a primeira parte antes do "_"
-        token = strtok(NULL, "_"); // Obtém a parte entre "_" e "."
-
-        if (token != NULL) {
-            strcpy(charTemp, token);
-            temp = atoi(charTemp);
-            if(temp > numero){
-                numero = temp;
+            if (token != NULL) {
+                strcpy(charTemp, token);
+                temp = atoi(charTemp);
+                if (temp > numero) {
+                    numero = temp;
+                }
             }
-        } 
+            contador++;
+        }
     }
 
     closedir(dir);
+
     char num[15];
-    char numFinal[15];
-    // fazer funcao para correr os ficheiros do cliente
-    // guardar os numeros depois do _ num array
-    // fazer um bubble sort para ordenar o array de forma decrescente
-    // pegar no primeiro elemento do array, somar 1 e guardar numa variavel
-    // converter essa variavel para char 
-    // strcat com o _
-    // strcat com o numero de cliente
     char temporaria[30];
-    sprintf(num, "%d", *numCliente); 
+    sprintf(num, "%d", *numCliente);
     strcpy(temporaria, num);
     strcat(temporaria, "_");
+    numero++;  // Incrementa o número
     sprintf(num, "%d", numero);
     strcat(temporaria, num);
+    sprintf(num, "%d", contador);
+    strcat(temporaria, num);
     strcpy(codManutencao, temporaria);
+
     return *codManutencao;
 }
 
 char criarNomeFicheiro(char *codManutencao, char *fileName) {
-    strcpy(codManutencao, fileName);
+    strcpy(fileName, codManutencao);
     strcat(fileName, ".txt");
     return *fileName;
-}
-
-char procurarFicheiro(int numCliente) {
-    char codigo[10];
-    char nomeFicheiro;
-    //diretorio = "./manutencoes";
-    printf("Inserir Codigo Manutencao: ");
-    scanf("%s", codigo);
-
-    DIR *dir;
-    //dir = opendir(diretorio);
-    return nomeFicheiro;
 }
 
 void consultaFicheiroManutencao() {
