@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <stdlib.h>
 
+// declaracao a struct manutencoes
 struct manutencoes {
     int codManutencao; // gerado automaticamente
     char dataManutencao[11]; //YYYY-MM-DD
@@ -12,7 +13,7 @@ struct manutencoes {
     int duracao[6]; // HH:MM
     char descricao[100]; // descricao do que foi efetuado
 };
-
+// declaracao da struc clientes
 struct clientes {
     int idCliente;
     char nomeCliente[50];
@@ -30,6 +31,8 @@ void menu();
 void consultaFicheiroManutencao();
 char criarNomeFicheiro(char *codManutencao, char *fileName);
 
+int verificarFormatoHoras(const char *horas);
+int verificarFormatoData(const char *data);
 void listarFicheiros();
 
 
@@ -159,40 +162,53 @@ void criarManutencao() {
         menu();
     }
     // informa o cliente para inserir a data da manutencao
-    printf("Data da Manutencao(AAAA-MM-DD): ");
+    do {
 
-    // le os dados inseridos pelo utilizador e insere a partir do stdin 
-    fgets(manutencao->dataManutencao, 11, stdin);
+        printf("Data da Manutencao(AAAA-MM-DD): ");
+
+        // le os dados inseridos pelo utilizador e insere a partir do stdin 
+        fgets(manutencao->dataManutencao, 11, stdin);
+        setbuf(stdin, NULL);
+        //garante que nao existe nenhum carater oculto no buffer
+        while ((getchar()) != '\n');
+    } while(!verificarFormatoData(manutencao->dataManutencao));
     setbuf(stdin, NULL);
-    //garante que nao existe nenhum carater oculto no buffer
-    while ((getchar()) != '\n');
 
-    // pede ao utilizador para inserir o tipo de manutencao
-    printf("Tipo de Manutencao(Preventiva/Correctiva): ");
+    char correctiva[11] = "Correctiva";
+    char preventiva[11] = "Preventiva";
 
-    // le os dados inseridos pelo utilizador e insere a partir do stdin
-    fgets(manutencao->tipoManutencao, 11, stdin);
+    do {
+        // pede ao utilizador para inserir o tipo de manutencao
+        printf("Tipo de Manutencao(Preventiva/Correctiva): ");
+
+        // le os dados inseridos pelo utilizador e insere a partir do stdin
+        fgets(manutencao->tipoManutencao, 11, stdin);
+        setbuf(stdin, NULL);
+        //garante que nao existe nenhum carater oculto no buffer
+        while ((getchar()) != '\n');
+    } while(strcmp(preventiva, manutencao->tipoManutencao) != 0 && strcmp(correctiva, manutencao->tipoManutencao) != 0);
     setbuf(stdin, NULL);
-    //garante que nao existe nenhum carater oculto no buffer
-    while ((getchar()) != '\n');
+
+    do {
+        // pede ao utilizador para inserir a hora de inicio da manutencao
+        printf("Hora de Inicio da Manutencao(HH:MM): ");
 
 
-    // pede ao utilizador para inserir a hora de inicio da manutencao
-    printf("Hora de Inicio da Manutencao(HH:MM): ");
+        // le os dados inseridos pelo utilizador e insere a partir do stdin
+        fgets(manutencao->horaInicio, 6, stdin);
+        setbuf(stdin, NULL);
+        while ((getchar()) != '\n');
+    } while(!verificarFormatoHoras(manutencao->horaInicio));
 
+    do {
+        // pede ao utilizador para inserir a hora de fim da manutencao
+        printf("Hora de Fim da Manutencao(HH:MM): ");
 
-    // le os dados inseridos pelo utilizador e insere a partir do stdin
-    fgets(manutencao->horaInicio, 6, stdin);
-    setbuf(stdin, NULL);
-    while ((getchar()) != '\n');
-
-    // pede ao utilizador para inserir a hora de fim da manutencao
-    printf("Hora de Fim da Manutencao(HH:MM): ");
-
-    // le os dados inseridos pelo utilizador e insere a partir do stdin
-    fgets(manutencao->horaFim, 6, stdin);
-    setbuf(stdin, NULL);
-    while ((getchar()) != '\n');
+        // le os dados inseridos pelo utilizador e insere a partir do stdin
+        fgets(manutencao->horaFim, 6, stdin);
+        setbuf(stdin, NULL);
+        while ((getchar()) != '\n');
+    } while(!verificarFormatoHoras(manutencao->horaFim));
 
     // pede ao utilizador para inserir uma breve descricao do que fooi feito na manutencao
     printf("Descricao da Manutencao: ");
@@ -201,7 +217,7 @@ void criarManutencao() {
     fgets(manutencao->descricao, 100, stdin);
     setbuf(stdin, NULL);
     // while ((getchar()) != '\n');
-    
+
     // Escreve os dados da struct no respetivo ficheiro
     fprintf(file, "Numero de Cliente: %i\n", cliente->idCliente);
     fprintf(file, "Data: %s\n", manutencao->dataManutencao);
@@ -331,7 +347,7 @@ void alterarManutencao() {
     }
 
 
-    // Pedir ao usuário para indicar qual linha deseja alterar
+    // linha a altera, que corresponde a descricao
     int numeroLinha = 6;
 
     // Mover o ponteiro para o início do arquivo
@@ -485,7 +501,8 @@ void consultaFicheiroManutencao() {
 
     // verifica se consegue abrir o ficheiro
     if (file == NULL) {
-        printf("Erro ao abrir ficheiro.");
+        printf("Erro ao abrir ficheiro.\nPrima <ENTER> para continuar\n");
+        getchar();
         // se nao conseguir chama novamente a funcao consultaManClinete
         consultaManCliente();
     }
@@ -496,4 +513,58 @@ void consultaFicheiroManutencao() {
     }
     // fecha o ficheiro
     fclose(file);
+}
+int verificarFormatoData(const char *data) {
+    if (strlen(data) != 10) {
+        return 0;
+    }
+
+    if (data[4] != '-' ||  data[7] != '-') {
+        return 0;
+    }
+
+    for (int i = 0; i < 10; i++) {
+        if (i != 4 && i != 7 && (data[i] < '0' || data[i] > '9')) {
+            return 0;
+        }
+    }
+
+    int mes = atoi(data + 5);
+    if (mes < 1 || mes > 12) {
+        return 0;
+    }
+
+    int dia = atoi(data + 8);
+    if (dia < 1 ||  dia > 31) {
+        return 0;
+    }
+
+    return 1;
+}
+int verificarFormatoHoras(const char *horas) {
+    if (strlen(horas) != 5) {
+        return 0;
+    }
+
+    if (horas[2] != ':') {
+        return 0;
+    }
+
+    for (int i = 0; i < 5; i++) {
+        if (i != 2 && (horas[i] < '0' || horas[i] > '9')) {
+            return 0;
+        }
+    }
+
+    int hora = atoi(horas);
+    if (hora < 0 || hora > 24) {
+        return 0;
+    }
+
+    int minuto = atoi(horas + 3);
+    if (minuto < 0 || minuto > 59) {
+        return 0;
+    }
+
+    return 1;
 }
