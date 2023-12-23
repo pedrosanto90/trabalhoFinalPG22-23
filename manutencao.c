@@ -22,7 +22,7 @@ struct clientes {
 };
 
 void criarManutencao();
-int consultaManCliente();
+void consultaManCliente();
 void consultarManutencao();
 void alterarManutencao();
 char criarCodigoManutencao(int *numCliente, char *codManutencao);
@@ -99,74 +99,94 @@ void menu() {
             // caso o utilizador escolha outra opcao que nao as listadas em cima
             // o programa indica que nao escolheu uma opcao valida
             printf("Opcao Invalida\nPressione <ENTER>\n");
+            // a funcao getchar aguarda um input do utilizador para puder seguir para o proximo passo
             getchar();
             // volta a chamar a funcao menu
             menu();
 
 
     }
+    // limpar o buffer para evitar bugs com carateres guardados no buffer
     setbuf(stdin, NULL);
 }
 
 void criarManutencao() {
-    // Limpa o terminal
+    // chamada da funcao para limpar o terminal
     limparTerminal();
-    // codigo de manutencao criado automaticamente de acordo com o ultimo registo (numero de manutencao conjugado com numero de cliente)
-    // inserir data, hara de inicio e de fim de manutencao, duracao calculada automaticamente 
-    // indicar o cliente ao qual foi feita a manutencao
-    // indicar o que foi feito durante a manutencao
-    // inserir dados num documento .txt (cliente?) todas as manutencoes de um cliente num mesmo documento ou agrupado em pastas de cliente?
-    // nome do ficheiro sera dado consoante o decidido no ponto anterior 
+    // declara a struct manutencao do tipo manutencoes 
+    // e aloca memoria para a mesma com a funcao malloc e com o tamanho de manutencoes
     struct manutencoes *manutencao =  (struct manutencoes*) malloc(sizeof(struct manutencoes));
+    // declara a struct cliente do tipo clientes 
+    // e aloca memoria para a mesma com a funcao malloc e com o tamanho de clientes
     struct clientes *cliente = (struct clientes*) malloc(sizeof(struct clientes));
+    // declara a variavel codigoManutencao com o tipo char
     char codigoManutencao;
     printf("Indique o numero de cliente: ");
+    // espera o input do utilizador e guarda na struct cliente->idCliente
     scanf("%i", &cliente->idCliente);
+    // limpar o buffer para evitar bugs com carateres guardados no buffer
     setbuf(stdin, NULL);
 
-
+    // declara o apontador codManutencao
     char *codManutencao;
+    // apontador codManutencao recebe o endereco de codigoManutencao
     codManutencao = &codigoManutencao;
+    // chama a funcao criarCodigoManutencao com 2 argumentos
+    // - endereco de cliente->idCliente
+    // - codManutencao
     criarCodigoManutencao(&cliente->idCliente, codManutencao); 
+    // declara a variavel nomem de ficheiro do tipo char
     char nomeFicheiro;
+    // declara o apontador fileName e indica que recebe o endereco de nomeFicheiro
     char *fileName = &nomeFicheiro;
+    // chama a funcao criarNomeFicheiro com 2 argumentos
+    //  - codManutencao
+    //  - fileName
     criarNomeFicheiro(codManutencao, fileName);
+    // declara o apontador file do tipo FILE
+    // FILE E uma biblioteca de C usada para trabalhar com ficheiros
     FILE *file;
+    // a variavel file recebe a funcao fopen
+    // a funcao fopen serve abrir um ficheiro e recebe dois argumentos
+    // o ficheiro para abrir, neste caso atravez da variavel fileName 
+    // e o modo em que o ficheiro vai ser aberto
+    // neste caso em modo w - write
     file = fopen(fileName, "w");
-    // chamar funcao em vez de colocar o nome do ficheiro
+    // verificacao para abrir o ficheiro
+    // se nao conseguir abrir o ficheiro informa que ocorreu um erro e chama novamente a funcao menu
     if(file == NULL) {
         printf("Erro ao abrir ficheiro\n");
         menu();
     }
-    // Inserir numero de cliente
-    // inserir data da manutencao
+    // informa o cliente para inserir a data da manutencao
     printf("Data da Manutencao(AAAA-MM-DD): ");
 
     // le os dados inseridos pelo utilizador e insere a partir do stdin 
     fgets(manutencao->dataManutencao, 11, stdin);
     setbuf(stdin, NULL);
+    //garante que nao existe nenhum carater oculto no buffer
     while ((getchar()) != '\n');
 
-    // inserir tipo de manutencao
-
-    printf("Tipo de Manutencao: ");
+    // pede ao utilizador para inserir o tipo de manutencao
+    printf("Tipo de Manutencao(Preventiva/Correctiva): ");
 
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->tipoManutencao, 11, stdin);
     setbuf(stdin, NULL);
+    //garante que nao existe nenhum carater oculto no buffer
     while ((getchar()) != '\n');
 
-    // inserir hora de inicio
 
+    // pede ao utilizador para inserir a hora de inicio da manutencao
     printf("Hora de Inicio da Manutencao(HH:MM): ");
+
 
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->horaInicio, 6, stdin);
     setbuf(stdin, NULL);
     while ((getchar()) != '\n');
 
-    // inserir hora de fim
-
+    // pede ao utilizador para inserir a hora de fim da manutencao
     printf("Hora de Fim da Manutencao(HH:MM): ");
 
     // le os dados inseridos pelo utilizador e insere a partir do stdin
@@ -174,9 +194,7 @@ void criarManutencao() {
     setbuf(stdin, NULL);
     while ((getchar()) != '\n');
 
-    // inserir descricao da manutencao
-
-
+    // pede ao utilizador para inserir uma breve descricao do que fooi feito na manutencao
     printf("Descricao da Manutencao: ");
 
     // le os dados inseridos pelo utilizador e insere a partir do stdin
@@ -191,7 +209,7 @@ void criarManutencao() {
     fprintf(file, "Hora de Inicio: %s\n", manutencao->horaInicio);
     fprintf(file, "Hora de fim: %s\n", manutencao->horaFim);
 
-    // duracao da manutencao
+    // faz o calculo de quanto tempo durou a manutencao e guarda no respetivo campo do ficheiro
     int horaInicio, minutoInicio, horaFim, minutoFim;
     sscanf(manutencao->horaInicio, "%d:%d", &horaInicio, &minutoInicio);
     sscanf(manutencao->horaFim, "%d:%d", &horaFim, &minutoFim);
@@ -201,24 +219,23 @@ void criarManutencao() {
     fprintf(file, "Duração: %02d:%02d\n", diferencaHoras, diferencaMinutosRestantes);
     fprintf(file, "Descricao: %s\n", manutencao->descricao);
 
-    // falta criar funcao para calcular duracao da manutencao e criacao do codigo de manutencao
-
+    // fecha o ficheiro 
     fclose(file);
-
+    
+    // liberta a memoria alocada pela funcao malloc
     free(manutencao);
     free(cliente);
+    // chama novamente a funcao menu
     menu();
 }
 
-int consultaManCliente() {
+// funcao para procurar todos os ficheiros de manutencao de um determinado cliente
+void consultaManCliente() {
     setbuf(stdin, NULL);
     limparTerminal();
-    // pesquisar por cliente e retorna uma lista de todas as manutencoes efetuadas a esse cliente
-    // mostra o total de manutencoes (media anual/mensal???)
-    // escolher uma das manutencoes e ver os detalhes dessa manutencao
-    // Solicita ao usuário inserir a string de pesquisa
     char search_string[256];
     printf("Numero de Cliente: ");
+    // espera um input do utilizador de uma string atravez do stdin, do tamanho da variavel search_string e guarda nessa mesma variavel
     fgets(search_string, sizeof(search_string), stdin);
     // Remove a quebra de linha do final da string
     search_string[strcspn(search_string, "\n")] = '\0';
@@ -245,66 +262,69 @@ int consultaManCliente() {
                 }
             }
         }
+        // se o diretorio foi aberto com sucesso chama a funcao consultarFicheiroManutencao
+
         consultaFicheiroManutencao();
-
+    // se nao foi possivel abrir o diretorio
     } else {
-        char opcao;
-        // Se não foi possível abrir o diretório, imprime uma mensagem de erro
-        printf("O cliente que prentende consultar nao tem nenhuma manutencao registada.\n");
-        printf("Deseja criar um registo para este cliente?[S]im [N]ao\n");
-        scanf("%c", &opcao);
-
-        if(opcao == 'S') {
-            criarManutencao();
-        } else if (opcao == 'N') {
-            menu();
-        } else {
-            printf("Leitura nao efetuada");
-            menu();
-        }
-
+        // imprime uma mensagem de erro
+        printf("Nao foi possivel abrir o diretorio\n");
+        // chama novamente a funcao menu
+        menu();
     }
-
-    return 0;
 }
-
+// funcao consultarManutencao
 void consultarManutencao() {
-
+    // cria o apontador dir do tipo DIR
+    // DIR e uma biblioteca de C usada para abrir diretorios
     DIR *dir;
     struct dirent *entrada;
-
+    // inicializa a variavel dir com a funcao opendir para abrir o diretorio onde o programa corre "."
     dir = opendir(".");
-
+    
+    // se nao conseguir abrir o diretorio imprime uma mensagem de erro
     if (dir == NULL) {
         perror("Erro ao abrir o diretório");
         return;
     }
-
+    
+    // percorre todo o diretorio e imprime todos os ficheiros com a extencao ".txt"
     while ((entrada = readdir(dir)) != NULL) {
         // Verifica se o arquivo tem a extensão .txt
         if (strstr(entrada->d_name, ".txt") != NULL) {
             printf("%s\n", entrada->d_name);
         }
     }
-    consultaFicheiroManutencao();
 
+    // chamada da funcao consultarFicheiroManutencao
+    consultaFicheiroManutencao();
+    
+    // fecha o diretorio
     closedir(dir);
-    // pesquisar manutencoes num intervalo de tempo
-    // mostrar manutencoes da mais recente para a mais antiga
-    // mostrar manutencoes de acordo com a duracao
 }
 
+// inicializacao da funcao alterarManutencao
 void alterarManutencao() {
+    // limpa o buffer para evitar bugs relacionados com carateres ocultos no buffer
     setbuf(stdin, NULL);
+    // declara o apontador file do tipo FILE que serve para lidar com ficheiros em C
     FILE *file;
+    // declara a variavel ficheiro do tipo char com tamanho 256
     char ficheiro[256];
+    // declara a variavel linha do tipo char com tamanho 150
     char linha[150];
+    // pede ao utilizador para indicar o ficheiro que pretende alterar
     printf("Indique o ficheiro que quer alterar: ");
+    // recebe o input do utilizador e guarda na variavel ficheiro
     scanf("%s", ficheiro);
+    // limpa o buffer para evitar bugs relacionados com carateres ocultos no buffer
     setbuf(stdin, NULL);
+    // faz a concatenacao do input do utilizador com ".txt" 
     strcat(ficheiro, ".txt");
+    // abre o ficheiro em modo leitura + escrita (r+)
     file = fopen(ficheiro, "r+");
-
+    
+    // se nao conseguir abrir o ficheiro imprime uma mensagem de erro e volta a chamar a chamar a funcao alterarManutencao
     if (file == NULL) {
         printf("Erro ao abrir ficheiro\n");
         alterarManutencao();
@@ -317,11 +337,17 @@ void alterarManutencao() {
     // Mover o ponteiro para o início do arquivo
     fseek(file, 0, SEEK_SET);
 
-    // Variável para contar as linhas
+    // declara a variável para contar as linhas
     int contadorLinhas = 0;
+    // declara a variavel novaDescricao do tipo char com tamanho 100
     char novaDescricao[100];
+    // pede ao  utilizador para inserir a nova descricao
     printf("Descricao: ");
+    // recebe o input do utilizador atravez do stdin e guarda na variavel novaDescricao
     fgets(novaDescricao, sizeof(novaDescricao), stdin);
+    // usa a funcao strcspn para para acalcular o comprimento da string ate encontrar o carater 'newLine'
+    // depois usa o indice de \n (newLine) e substitui por \0(carater nul)
+    // para garantir que a string termina ali
     novaDescricao[strcspn(novaDescricao, "\n")] = '\0'; 
     // Percorrer o arquivo novamente
     while (fgets(linha, sizeof(linha), file) != NULL) {
@@ -329,66 +355,72 @@ void alterarManutencao() {
 
         // Se a linha atual é a linha desejada, realizar a alteração
         if (contadorLinhas == numeroLinha) {
-            // Aqui você pode pedir ao usuário para inserir a nova informação
-            // e substituir a linha atual com a nova informação usando fprintf
-            // Exemplo: fprintf(file, "Nova informacao\n");
 
-            // Exemplo: substituir a linha por "Nova informacao"
+            // substituir a linha por "Nova informacao"
             fprintf(file, "Descricao: %s\n", novaDescricao);
-
+            // informa o utilizador que a linha foi alterada com sucesso 
             printf("Linha alterada com sucesso!\n");
             break; // Parar a busca, pois a linha já foi alterada
         }
     }
-
+    // fecha o ficheiro
     fclose(file);
 }
-
+// inicializacao da funcao listarFicheiros
 void listarFicheiros() {
-
+    // abre o diretorio
     DIR *dir;
     struct dirent *entrada;
 
     dir = opendir(".");
-
+    // verifica se o diretorio foi aberto com sucesso
+    // se nao foi aberto indica uma mensagem de erro
     if (dir == NULL) {
         perror("Erro ao abrir o diretório");
         return;
     }
-
+    // percorre todos os ficheiros do diretorio
     while ((entrada = readdir(dir)) != NULL) {
         // Verifica se o arquivo tem a extensão .txt
         if (strstr(entrada->d_name, ".txt") != NULL) {
+            // imprime todos os arquivos com extencao ".txt"
             printf("%s\n", entrada->d_name);
         }
     }
-
+    // fecha o diretorio
     closedir(dir);
 }
-
+// inicializacao da funcao criarCodigoManutencao 
+// recebe dois argumentos
+// um apontador do tipo char - numCliente
+// um apontador do tipo char - codManutencao
 char criarCodigoManutencao(int *numCliente, char *codManutencao) {
-    int numero = 0;  // Inicialize a variável numero
+    // declaracao das variaveis
+    int numero = 0;   
     int temp;
     char charTemp[4];
     char nomeFicheiro[15];
-    DIR *dir;
     int contador = 0;
+    // declaracao do apontador dir do tipo DIR
+    DIR *dir;
     struct dirent *entrada;
-
+    // inicializacao da variavel dir com a funcao opendir que abre o diretorio e recebe o argumento "." que significa o diretorio actual
     dir = opendir(".");
-
+    //verifica se foi possivel abrir o diretorio
+    //se nao conseguuir abrir o diretorio imprime uma mensagem de erro e sai do programa com a funcao exit(1)
     if (dir == NULL) {
         perror("Erro ao abrir o diretório");
         exit(1);
     }
 
+    // percorre todo o diretorio e procura por ficheiros com extencao .txt
     while ((entrada = readdir(dir)) != NULL) {
         if (strstr(entrada->d_name, ".txt") != NULL) {
             strcpy(nomeFicheiro, entrada->d_name);
-
+            // percorre todo o diretorio e guarda o valor que esta entre _ e .
             char *token = strtok(nomeFicheiro, "_");
             token = strtok(NULL, "_");
-
+            // compara os valores a guarda o mais alto numa variavel
             if (token != NULL) {
                 strcpy(charTemp, token);
                 temp = atoi(charTemp);
@@ -399,30 +431,41 @@ char criarCodigoManutencao(int *numCliente, char *codManutencao) {
             contador++;
         }
     }
-
+    // fecha o diretorio
     closedir(dir);
 
     char num[15];
     char temporaria[30];
+    // transforma a variavel para onde o apontador numCliente esta a apontar e guarda na variavel num com um novo tipo, neste caso char
     sprintf(num, "%d", *numCliente);
+    // copia a variavel que esta guardarda em num e guarda em temporaria
     strcpy(temporaria, num);
+    // concatena a variavel temporaria com _
     strcat(temporaria, "_");
     numero++;  // Incrementa o número
+    // pega na variavel numero, do tipo inteiro e guarda na variavel num com tipo char
     sprintf(num, "%d", numero);
+    // concatena a variavel temporaria com a variavel num
     strcat(temporaria, num);
+    // pega na variavel contador, do tipo inteiro e guarda na variavel num com tipo char
     sprintf(num, "%d", contador);
+    // concatena a variavel temporaria com a variavel num
     strcat(temporaria, num);
+    // copia o valor da variavel temporaria para a variavel codManutencaoj
     strcpy(codManutencao, temporaria);
-
+    // retorna o apontador codManutencao
     return *codManutencao;
 }
-
+// incializacao da funcao criarNomeFicheiro que recebe dois argumentos
 char criarNomeFicheiro(char *codManutencao, char *fileName) {
+    // copia o valor para onde codMAnutencao esta a apontar e para a variavel onde fileName aponta
     strcpy(fileName, codManutencao);
+    // concatena o valor para onde fileName esta a apontar com .txt
     strcat(fileName, ".txt");
+    // retorna o apontador fileName
     return *fileName;
 }
-
+// inicializacao da funcao consultaFicheiroManutencao
 void consultaFicheiroManutencao() {
     char codManutencao[15];
     char linha[150];
@@ -430,6 +473,7 @@ void consultaFicheiroManutencao() {
     // limpa o buffer
     setbuf(stdin, NULL);
     printf("Indique qual a manutencao que deseja ver: ");
+    // recebe o valor introduzido pelo utilizador guarda na variavel codManutencao
     scanf("%s", codManutencao);
 
     // faz a concatenacao do codigo de manutencao com .txt para gerar um nome de arquivo valido para abrir
