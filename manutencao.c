@@ -38,15 +38,74 @@ void listarFicheiros();
 
 void limparTerminal() {
 #ifdef _WIN32
+    // Limpa o terminal em ambientes Windows
     system("cls"); // Para Windows
 #else
-    system("clear"); // Para sistemas Unix/Linux
+    // Para sistemas Unix/Linux
+    system("clear"); 
 #endif
 }
 
 int main() {
+    // a funcao main apenas chama a o menu
+    // todas as restantes funcoes sao chamadas dentro da funcao menu
     menu();
     return 0;
+}
+
+void menu() {
+    // Chamda da funcao limpar terminal para limpar o que ja tiver escrito antes no terminal
+    limparTerminal();
+    //limpa o buffer para evitar bugs relacionados com carateres no buffer
+    setbuf(stdin, NULL);
+    // declara a variavel opcao do tipo inteiro que vai ser usada para escolher a opcao do menu
+    int opcao;
+
+    printf("Trabalho Final\nGestao de Manutencoes\n");
+
+    printf("1 - Criar Manutencao;\n2 - Consultar Manutencao por Cliente;\n3 - Consultar Todas as Manutencoes;\n4 - Alterar Manutencao;\n0 - Sair;\n");
+    // le o que foi introduzido pelo utilizador e guarda na variavel opocao
+    scanf("%d", &opcao);
+    setbuf(stdin, NULL);
+
+    switch(opcao) {
+        case 1:
+            // caso a opcao do utilizador seja 1, chama a funcao criarManutencao
+            criarManutencao();
+            // o break faz com que o programa nao verifique as restantes opcoes
+            break;
+        case 2:
+            // caso a opcao do utilizador seja 1, chama a funcao consultaManCliente
+            consultaManCliente();
+            // o break faz com que o programa nao verifique as restantes opcoes
+            break;
+        case 3:
+            // caso a opcao do utilizador seja 3, chama a funcao consultarManutencao
+            consultarManutencao();
+            // o break faz com que o programa nao verifique as restantes opcoes
+            break;
+        case 4:
+            // caso a opcao do utilizador seja 4, chama a funcao listar ficheiros 
+            listarFicheiros();
+            // depois de chamda a funcao anterior, chama a funcao alterarManutencao
+            alterarManutencao();
+            // o break faz com que o programa nao verifique as restantes opcoes
+            break;
+        case 0:
+            // caso o utilizador escolha 0, termina o programa
+            printf("Terminar Programa\n");
+            exit(0);
+        default:
+            // caso o utilizador escolha outra opcao que nao as listadas em cima
+            // o programa indica que nao escolheu uma opcao valida
+            printf("Opcao Invalida\nPressione <ENTER>\n");
+            getchar();
+            // volta a chamar a funcao menu
+            menu();
+
+
+    }
+    setbuf(stdin, NULL);
 }
 
 void criarManutencao() {
@@ -285,48 +344,6 @@ void alterarManutencao() {
     fclose(file);
 }
 
-void menu() {
-    limparTerminal();
-    setbuf(stdin, NULL);
-    // Criar menu para escolher o que fazer
-    // inserir
-    // consulta por cliente
-    // consulta manutencao
-    // alterar manutencao
-    int opcao;
-
-    printf("Trabalho Final\nGestao de Manutencoes\n");
-
-    printf("1 - Criar Manutencao;\n2 - Consultar Manutencao por Cliente;\n3 - Consultar Todas as Manutencoes;\n4 - Alterar Manutencao;\n0 - Sair;\n");
-    scanf("%d", &opcao);
-    setbuf(stdin, NULL);
-
-    switch(opcao) {
-        case 1:
-            criarManutencao();
-            break;
-        case 2:
-            consultaManCliente();
-            break;
-        case 3:
-            consultarManutencao();
-            break;
-        case 4:
-            listarFicheiros();
-            alterarManutencao();
-            break;
-        case 0:
-            printf("Terminar Programa\n");
-            exit(0);
-        default:
-           printf("Opcao Invalida\nPressione <ENTER>\n");
-           getchar();
-           menu();
-            
-
-    }
-    setbuf(stdin, NULL);
-}
 void listarFicheiros() {
 
     DIR *dir;
