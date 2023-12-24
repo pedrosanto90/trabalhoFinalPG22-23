@@ -9,8 +9,8 @@ struct manutencoes {
     int codManutencao; // gerado automaticamente
     char dataManutencao[11]; //YYYY-MM-DD
     char tipoManutencao[11]; // Correctiva/Preventiva
-    char horaInicio[5]; //HH:MM
-    char horaFim[5]; // HH:MM
+    char horaInicio[6]; //HH:MM
+    char horaFim[6]; // HH:MM
     int duracao[6]; // HH:MM
     char descricao[100]; // descricao do que foi efetuado
 };
@@ -58,7 +58,7 @@ int main() {
 }
 
 void menu() {
-    // Chamda da funcao limpar terminal para limpar o que ja tiver escrito antes no terminal
+    // Chamada da funcao limpar terminal para limpar o que ja tiver escrito antes no terminal
     limparTerminal();
     //limpa o buffer para evitar bugs relacionados com carateres no buffer
     setbuf(stdin, NULL);
@@ -66,11 +66,11 @@ void menu() {
     int opcao;
 
     printf("Trabalho Final\nGestao de Manutencoes\n");
-
+    setbuf(stdin, NULL);
     printf("1 - Criar Manutencao;\n2 - Consultar Manutencao por Cliente;\n3 - Consultar Todas as Manutencoes;\n4 - Alterar Manutencao;\n0 - Sair;\n");
     // le o que foi introduzido pelo utilizador e guarda na variavel opocao
     scanf("%d", &opcao);
-    setbuf(stdin, NULL);
+
 
 
     switch(opcao) {
@@ -117,6 +117,7 @@ void menu() {
             printf("Opcao Invalida\nPressione <ENTER>\n");
             // a funcao getchar aguarda um input do utilizador para puder seguir para o proximo passo
             getchar();
+            setbuf(stdin, NULL);
             // volta a chamar a funcao menu
             menu();
 
@@ -139,14 +140,14 @@ void criarManutencao() {
     // verifica se conseguiu alocar memoria
     if (manutencao == NULL || cliente == NULL) {
         printf("Erro na alocacao de memoria\n");
-        exit(EXIT_FAILURE);
+        exit(1);
     }
-
+    setbuf(stdin, NULL);
     printf("Indique o numero de cliente: ");
     // espera o input do utilizador e guarda na struct cliente->idCliente
     scanf("%d", &cliente->idCliente);
     // limpar o buffer para evitar bugs com carateres guardados no buffer
-    setbuf(stdin, NULL);
+
     // declara a variavel codigoManutencao com o tipo char
     char codigoManutencao;
     // declara o apontador codManutencao
@@ -182,70 +183,74 @@ void criarManutencao() {
     }
     // informa o cliente para inserir a data da manutencao
     do {
-
+        setbuf(stdin, NULL);
         printf("Data da Manutencao(AAAA-MM-DD): ");
 
         // le os dados inseridos pelo utilizador e insere a partir do stdin
         fgets(manutencao->dataManutencao, 11, stdin);
         // remove o carater \n
         manutencao->dataManutencao[strcspn(manutencao->dataManutencao, "\n")];
-        setbuf(stdin, NULL);
+
         //garante que nao existe nenhum carater oculto no buffer
-        // while ((getchar()) != '\n');
+        while ((getchar()) != '\n');
     } while(!verificarFormatoData(manutencao->dataManutencao));
     setbuf(stdin, NULL);
 
-    char correctiva[11] = "Correctiva";
-    char preventiva[11] = "Preventiva";
 
-    //while (strcmp(preventiva, manutencao->tipoManutencao) != 0 && strcmp(correctiva, manutencao->tipoManutencao) != 0) {
-        // pede ao utilizador para inserir o tipo de manutencao
-        printf("Tipo de Manutencao(Preventiva/Correctiva): ");
 
-        // le os dados inseridos pelo utilizador e insere a partir do stdin
-        fgets(manutencao->tipoManutencao, 11, stdin);
 
-        // remove o carater \n
-        manutencao->tipoManutencao[strcspn(manutencao->tipoManutencao, "\n")];
+    // pede ao utilizador para inserir o tipo de manutencao
+    printf("Tipo de Manutencao(Preventiva/Correctiva): ");
 
-        //setbuf(stdin, NULL);
-        //garante que nao existe nenhum carater oculto no buffer
-     //  while ((getchar()) != '\n');
-    //}
+    // le os dados inseridos pelo utilizador e insere a partir do stdin
+    fgets(manutencao->tipoManutencao, 11, stdin);
+
+    // remove o carater \n
+    manutencao->tipoManutencao[strcspn(manutencao->tipoManutencao, "\n")];
+
+    //garante que nao existe nenhum carater oculto no buffer
+    while ((getchar()) != '\n');
     setbuf(stdin, NULL);
 
+
+
     do {
+        setbuf(stdin, NULL);
         // pede ao utilizador para inserir a hora de inicio da manutencao
         printf("Hora de Inicio da Manutencao(HH:MM): ");
 
 
         // le os dados inseridos pelo utilizador e insere a partir do stdin
         fgets(manutencao->horaInicio, 6, stdin);
+
         // remove o carater \n
         manutencao->horaInicio[strcspn(manutencao->horaInicio, "\n")];
-        setbuf(stdin, NULL);
+
         //while ((getchar()) != '\n');
     } while(!verificarFormatoHoras(manutencao->horaInicio));
 
     do {
+        setbuf(stdin, NULL);
         // pede ao utilizador para inserir a hora de fim da manutencao
         printf("Hora de Fim da Manutencao(HH:MM): ");
 
         // le os dados inseridos pelo utilizador e insere a partir do stdin
         fgets(manutencao->horaFim, 6, stdin);
+
         // remove o carater \n
         manutencao->horaFim[strcspn(manutencao->horaFim, "\n")];
-        setbuf(stdin, NULL);
+
         //while ((getchar()) != '\n');
     } while(!verificarFormatoHoras(manutencao->horaFim));
 
+    setbuf(stdin, NULL);
     // pede ao utilizador para inserir uma breve descricao do que fooi feito na manutencao
     printf("Descricao da Manutencao: ");
 
     // le os dados inseridos pelo utilizador e insere a partir do stdin
     fgets(manutencao->descricao, 101, stdin);
     manutencao->descricao[strcspn(manutencao->descricao, "\n")];
-    setbuf(stdin, NULL);
+
     //while ((getchar()) != '\n');
 
     // Escreve os dados da struct no respetivo ficheiro
@@ -272,6 +277,7 @@ void criarManutencao() {
     free(manutencao);
     free(cliente);
     // chama novamente a funcao menu
+    limparTerminal();
     menu();
 }
 
@@ -500,8 +506,6 @@ char criarCodigoManutencao(int *numCliente, char *codManutencao) {
     strcat(temporaria, num);
     // pega na variavel contador, do tipo inteiro e guarda na variavel num com tipo char
     sprintf(num, "%d", contador);
-    // concatena a variavel temporaria com a variavel num
-    strcat(temporaria, num);
     // copia o valor da variavel temporaria para a variavel codManutencaoj
     strcpy(codManutencao, temporaria);
     // retorna o apontador codManutencao
