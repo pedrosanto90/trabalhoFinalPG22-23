@@ -22,7 +22,7 @@ struct clientes {
     int nif;
     int contato;
 };
-
+// prototipagem das funcoes utilizadas durante o programa
 void criarManutencao();
 void consultaManCliente();
 void consultarManutencao();
@@ -31,27 +31,20 @@ char criarCodigoManutencao(int *numCliente, char *codManutencao);
 void menu();
 void consultaFicheiroManutencao();
 char criarNomeFicheiro(char *codManutencao, char *fileName);
-
 int verificarFormatoHoras(const char *horas);
 int verificarFormatoData(const char *data);
 void listarFicheiros();
+void limparTerminal();
+void voltar_menu();
 
 
 /* Funcao para limpar o terminal
  Funciona em ambientes windows e ambientes Unix/Linux */
 
-void limparTerminal() {
-#ifdef _WIN32
-    // Limpa o terminal em ambientes Windows
-    system("cls"); // Para Windows
-#else
-    // Para sistemas Unix/Linux
-    system("clear");
-#endif
-}
+
 
 int main() {
-    // a funcao main apenas chama a o menu
+    // a funcao main apenas chama a funcao menu
     // todas as restantes funcoes sao chamadas dentro da funcao menu
     menu();
     return 0;
@@ -113,7 +106,7 @@ void menu() {
         default:
             // caso o utilizador escolha outra opcao que nao as listadas em cima
             // o programa indica que nao escolheu uma opcao valida
-            while ((getchar()) != '\n');
+            // while ((getchar()) != '\n');
             printf("Opcao Invalida\nPressione <ENTER>\n");
             // a funcao getchar aguarda um input do utilizador para puder seguir para o proximo passo
             getchar();
@@ -140,7 +133,7 @@ void criarManutencao() {
     // verifica se conseguiu alocar memoria
     if (manutencao == NULL || cliente == NULL) {
         printf("Erro na alocacao de memoria\n");
-        exit(1);
+        menu();
     }
     setbuf(stdin, NULL);
     printf("Indique o numero de cliente: ");
@@ -196,17 +189,20 @@ void criarManutencao() {
     } while(!verificarFormatoData(manutencao->dataManutencao));
     setbuf(stdin, NULL);
 
+    char tipoManOpcao;
+    do {
+        printf("Tipo de Manutencao(P - Preventiva/C - Corretiva): ");
+        scanf("%c", &tipoManOpcao);
 
-
-
-    // pede ao utilizador para inserir o tipo de manutencao
-    printf("Tipo de Manutencao(Preventiva/Correctiva): ");
-
-    // le os dados inseridos pelo utilizador e insere a partir do stdin
-    fgets(manutencao->tipoManutencao, 11, stdin);
-
-    // remove o carater \n
-    manutencao->tipoManutencao[strcspn(manutencao->tipoManutencao, "\n")];
+        switch(tipoManOpcao) {
+            case 'P':
+                strcpy(manutencao->tipoManutencao, "Preventiva");
+                break;
+            case 'C':
+                strcpy(manutencao->tipoManutencao, "Corretiva");
+                break;
+        }
+    } while(tipoManOpcao!='P' && tipoManOpcao!='C');
 
     //garante que nao existe nenhum carater oculto no buffer
     while ((getchar()) != '\n');
@@ -251,7 +247,6 @@ void criarManutencao() {
     fgets(manutencao->descricao, 101, stdin);
     manutencao->descricao[strcspn(manutencao->descricao, "\n")];
 
-    //while ((getchar()) != '\n');
 
     // Escreve os dados da struct no respetivo ficheiro
     fprintf(file, "Numero de Cliente: %i\n", cliente->idCliente);
@@ -278,7 +273,7 @@ void criarManutencao() {
     free(cliente);
     // chama novamente a funcao menu
     limparTerminal();
-    menu();
+    voltar_menu();
 }
 
 // funcao para procurar todos os ficheiros de manutencao de um determinado cliente
@@ -295,7 +290,7 @@ void consultaManCliente() {
 
     DIR *dir = opendir(".");
     if (dir == NULL) {
-        perror("Erro ao abrir o diretorio");
+        printf("Erro ao abrir o diretorio");
         menu();
         return;
     }
@@ -356,67 +351,68 @@ void consultarManutencao() {
 
 // inicializacao da funcao Manutencao
 void alterarManutencao() {
-    // limpa o buffer para evitar bugs relacionados com carateres ocultos no buffer
     setbuf(stdin, NULL);
-    // declara o apontador file do tipo FILE que serve para lidar com ficheiros em C
-    FILE *file;
-    // declara a variavel ficheiro do tipo char com tamanho 256
-    char ficheiro[256];
-    // declara a variavel linha do tipo char com tamanho 150
-    char linha[150];
-    // pede ao utilizador para indicar o ficheiro que pretende alterar
-    printf("Indique o ficheiro que quer alterar: ");
-    // recebe o input do utilizador e guarda na variavel ficheiro
-    scanf("%s", ficheiro);
-    // limpa o buffer para evitar bugs relacionados com carateres ocultos no buffer
-    setbuf(stdin, NULL);
-    // faz a concatenacao do input do utilizador com ".txt"
-    strcat(ficheiro, ".txt");
-    // abre o ficheiro em modo leitura + escrita (r+)
-    file = fopen(ficheiro, "r+");
 
-    // se nao conseguir abrir o ficheiro imprime uma mensagem de erro e volta a chamar a chamar a funcao alterarManutencao
+    char ficheiro[256];
+    char linha[150];
+    char novaDescricao[100];
+
+    printf("Indique o ficheiro que quer alterar: ");
+    scanf("%s", ficheiro);
+    setbuf(stdin, NULL);
+    strcat(ficheiro, ".txt");
+
+    FILE *file = fopen(ficheiro, "r+");
     if (file == NULL) {
         printf("Erro ao abrir ficheiro\n");
         alterarManutencao();
+        return;
     }
 
-
-    // linha a altera, que corresponde a descricao
-    int numeroLinha = 6;
-
-    // Mover o ponteiro para o início do arquivo
+    int numeroLinha = 7;
     fseek(file, 0, SEEK_SET);
 
-    // declara a variável para contar as linhas
     int contadorLinhas = 0;
-    // declara a variavel novaDescricao do tipo char com tamanho 100
-    char novaDescricao[100];
-    // pede ao  utilizador para inserir a nova descricao
+
     printf("Descricao: ");
-    // recebe o input do utilizador atravez do stdin e guarda na variavel novaDescricao
-    //fgets(novaDescricao, sizeof(novaDescricao), stdin);
-    scanf("%s", &novaDescricao);
-    // usa a funcao strcspn para para acalcular o comprimento da string ate encontrar o carater 'newLine'
-    // depois usa o indice de \n (newLine) e substitui por \0(carater nul)
-    // para garantir que a string termina ali
+    // Leitura de uma linha completa
+    fgets(novaDescricao, sizeof(novaDescricao), stdin);
     novaDescricao[strcspn(novaDescricao, "\n")] = '\0';
-    // Percorrer o arquivo novamente
+
+    // Criar um arquivo temporário
+    FILE *tempFile = tmpfile();
+
     while (fgets(linha, sizeof(linha), file) != NULL) {
         contadorLinhas++;
 
-        // Se a linha atual é a linha desejada, realizar a alteração
         if (contadorLinhas == numeroLinha) {
-
-            // substituir a linha por "Nova informacao"
-            fprintf(file, "Descricao: %s\n", novaDescricao);
-            // informa o utilizador que a linha foi alterada com sucesso
+            fprintf(tempFile, "Descricao: %s\n", novaDescricao);
             printf("Linha alterada com sucesso!\n");
-            break; // Parar a busca, pois a linha já foi alterada
+        } else {
+            fprintf(tempFile, "%s", linha);
         }
     }
-    // fecha o ficheiro
+
     fclose(file);
+
+    // Voltar ao início do arquivo original
+    rewind(tempFile);
+
+    // Copiar conteúdo do arquivo temporário para o arquivo original
+    file = fopen(ficheiro, "w");
+    if (file == NULL) {
+        printf("Erro ao abrir ficheiro\n");
+        exit(EXIT_FAILURE);
+    }
+
+    while (fgets(linha, sizeof(linha), tempFile) != NULL) {
+        fprintf(file, "%s", linha);
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    voltar_menu();
 }
 // inicializacao da funcao listarFicheiros
 void listarFicheiros() {
@@ -527,7 +523,7 @@ void consultaFicheiroManutencao() {
 
     // limpa o buffer
     setbuf(stdin, NULL);
-    printf("Indique qual a manutencao que deseja ver(nao inclua '.txt'): ");
+    printf("Indique qual a manutencao que deseja ver: ");
     // recebe o valor introduzido pelo utilizador guarda na variavel codManutencao
     scanf("%s", codManutencao);
 
@@ -552,6 +548,7 @@ void consultaFicheiroManutencao() {
     }
     // fecha o ficheiro
     fclose(file);
+    voltar_menu();
 }
 int verificarFormatoData(const char *data) {
     if (strlen(data) != 10) {
@@ -580,6 +577,7 @@ int verificarFormatoData(const char *data) {
 
     return 1;
 }
+
 int verificarFormatoHoras(const char *horas) {
     if (strlen(horas) != 5) {
         return 0;
@@ -608,3 +606,31 @@ int verificarFormatoHoras(const char *horas) {
     return 1;
 }
 
+void voltar_menu() {
+    setbuf(stdin, NULL);
+    char opcao;
+    printf("\nDeseja continuar?(S - Sim, N - Nao): ");
+    scanf("%c", &opcao);
+
+    switch(opcao) {
+        case 'S':
+            limparTerminal();
+            menu();
+            break;
+        case 'N':
+            exit(0);
+        default:
+            printf("Opcao invalida");
+            voltar_menu();
+    }
+}
+
+void limparTerminal() {
+#ifdef _WIN32
+    // Limpa o terminal em ambientes Windows
+    system("cls"); // Para Windows
+#else
+    // Para sistemas Unix/Linux
+    system("clear");
+#endif
+}
