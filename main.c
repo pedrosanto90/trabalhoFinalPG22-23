@@ -259,12 +259,22 @@ void criarManutencao() {
     int horaInicio, minutoInicio, horaFim, minutoFim;
     sscanf(manutencao->horaInicio, "%d:%d", &horaInicio, &minutoInicio);
     sscanf(manutencao->horaFim, "%d:%d", &horaFim, &minutoFim);
-    int diferencaMinutos = (horaFim * 60 + minutoFim) - (horaInicio * 60 + minutoInicio);
-    int diferencaHoras = diferencaMinutos / 60;
-    int diferencaMinutosRestantes = diferencaMinutos % 60;
-    fprintf(file, "Duracao: %02d:%02d\n", diferencaHoras, diferencaMinutosRestantes);
-    fprintf(file, "Descricao: %s\n", manutencao->descricao);
-
+    if (horaFim > horaInicio) {
+        int diferencaMinutos = (horaFim * 60 + minutoFim) - (horaInicio * 60 + minutoInicio);
+        int diferencaHoras = diferencaMinutos / 60;
+        int diferencaMinutosRestantes = diferencaMinutos % 60;
+        fprintf(file, "Duracao: %02d:%02d\n", diferencaHoras, diferencaMinutosRestantes);
+        fprintf(file, "Descricao: %s\n", manutencao->descricao);
+    } else {
+        int diferencaMinutos = (horaInicio * 60 + minutoInicio) - (horaFim * 60 + minutoFim);
+        int diferencaHoras = 24 - (diferencaMinutos / 60);
+        int diferencaMinutosRestantes = 60 - (diferencaMinutos % 60);
+            if(diferencaMinutosRestantes == 60) {
+                diferencaMinutosRestantes = 0;
+            }
+        fprintf(file, "Duracao: %02d:%02d\n", diferencaHoras, diferencaMinutosRestantes);
+        fprintf(file, "Descricao: %s\n", manutencao->descricao);
+    }
     // fecha o ficheiro
     fclose(file);
 
@@ -338,7 +348,9 @@ void consultarManutencao() {
     while ((entrada = readdir(dir)) != NULL) {
         // Verifica se o arquivo tem a extensão .txt
         if (strstr(entrada->d_name, ".txt") != NULL) {
-            printf("%s\n", entrada->d_name);
+            // Remove a extensão .txt do nome do arquivo
+            char *nome_sem_extensao = strtok(entrada->d_name, ".");
+            printf("%s\n", nome_sem_extensao);
         }
     }
 
