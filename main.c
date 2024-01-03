@@ -185,7 +185,7 @@ void criarManutencao() {
         manutencao->dataManutencao[strcspn(manutencao->dataManutencao, "\n")];
 
         //garante que nao existe nenhum carater oculto no buffer
-        while ((getchar()) != '\n');
+       while ((getchar()) != '\n');
     } while(!verificarFormatoData(manutencao->dataManutencao));
     setbuf(stdin, NULL);
 
@@ -208,8 +208,6 @@ void criarManutencao() {
     while ((getchar()) != '\n');
     setbuf(stdin, NULL);
 
-
-
     do {
         setbuf(stdin, NULL);
         // pede ao utilizador para inserir a hora de inicio da manutencao
@@ -221,8 +219,8 @@ void criarManutencao() {
 
         // remove o carater \n
         manutencao->horaInicio[strcspn(manutencao->horaInicio, "\n")];
-
-        //while ((getchar()) != '\n');
+        // esta linha nao foi comentada na entraga do trabalho
+        while ((getchar()) != '\n');
     } while(!verificarFormatoHoras(manutencao->horaInicio));
 
     do {
@@ -235,8 +233,8 @@ void criarManutencao() {
 
         // remove o carater \n
         manutencao->horaFim[strcspn(manutencao->horaFim, "\n")];
-
-        //while ((getchar()) != '\n');
+        // esta linha nao foi comentada na entraga do trabalho
+        while ((getchar()) != '\n');
     } while(!verificarFormatoHoras(manutencao->horaFim));
 
     setbuf(stdin, NULL);
